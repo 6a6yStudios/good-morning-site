@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    text-align: center;
+    background-color: #ff6347;
+    color: white;
+    padding: 20px;
+  }
+  
+  #messages-container {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+  }
+  
+  .message {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #fafafa;
+  }
+  
+  h2 {
+    color: #ff6347;
+  }
+  
+  .message-content {
+    margin-top: 10px;
+  }
+  
