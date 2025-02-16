@@ -1,6 +1,6 @@
 async function loadMessages() {
     const messagesContainer = document.getElementById("messages-container");
-    const apiUrl = `https://cors-anywhere.herokuapp.com/https://api.github.com/repos/6a6yStudios/good-morning-site/contents/messages`;
+    const apiUrl = `https://api.github.com/repos/6a6yStudios/good-morning-site/contents/messages`;
 
     try {
         const response = await fetch(apiUrl);
