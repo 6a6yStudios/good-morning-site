@@ -1,9 +1,8 @@
 async function loadMessages() {
     const messagesContainer = document.getElementById("messages-container");
-    const apiUrl = `https://api.github.com/repos/YOUR_GITHUB_USERNAME/good-morning-site/contents/messages`;
+    const apiUrl = `https://cors-anywhere.herokuapp.com/https://api.github.com/repos/6a6yStudios/good-morning-site/contents/messages`;
 
     try {
-        // Fetch the list of files in the 'messages' directory
         const response = await fetch(apiUrl);
         if (!response.ok) {
             throw new Error(`GitHub API request failed with status: ${response.status}`);
@@ -15,22 +14,21 @@ async function loadMessages() {
 
         // Sort files by date (from filename: yyyy-mm-dd)
         messageFiles.sort((a, b) => {
-            const dateA = a.name.split("-").slice(0, 3).join("-"); // Format yyyy-mm-dd
+            const dateA = a.name.split("-").slice(0, 3).join("-");
             const dateB = b.name.split("-").slice(0, 3).join("-");
             return dateB.localeCompare(dateA);  // Sort descending by date
         });
 
-        // Display the messages
-        messagesContainer.innerHTML = "<p>Loading messages...</p>"; // Show loading message
+        // Clear any loading message
+        messagesContainer.innerHTML = "<p>Loading messages...</p>";
+
+        // Loop through all the message files and fetch their contents
         for (let file of messageFiles) {
-            const fileResponse = await fetch(file.download_url);
-            const markdownText = await fileResponse.text();
+            const fileResponse = await fetch(file.download_url);  // Use the correct download URL
+            const markdownText = await fileResponse.text();        // Fetch the raw markdown content
+            const messageHTML = marked(markdownText);              // Convert Markdown to HTML
+            const messageDate = file.name.split(".")[0];           // Extract date from filename
 
-            // Convert Markdown to HTML (using 'marked' library)
-            const messageHTML = marked(markdownText);
-
-            // Insert the message and its date
-            const messageDate = file.name.split(".")[0]; // Extract date from filename
             const messageContent = `
                 <div class="message">
                     <h2>Good Morning - ${messageDate}</h2>
