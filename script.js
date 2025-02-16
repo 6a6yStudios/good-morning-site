@@ -1,39 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
-    loadMessages();
-});
-
 async function loadMessages() {
-    const messagesDiv = document.getElementById("messages");
+    const messagesContainer = document.getElementById("messages-container");
+    const apiUrl = `https://api.github.com/repos/YOUR_GITHUB_USERNAME/good-morning-site/contents/messages`;
 
-    // Simulated file list with the date in the filename (for testing purposes)
-    const messageFiles = [
-        "messages/2025-02-16.md",
-        "messages/2025-02-17.md",
-        "messages/2025-02-15.md"
-    ];
+    try {
+        // Fetch the list of files in the 'messages' directory
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`GitHub API request failed with status: ${response.status}`);
+        }
+        const data = await response.json();
 
-    messagesDiv.innerHTML = "<p>Loading messages...</p>";
+        // Filter for .md files
+        const messageFiles = data.filter(item => item.name.endsWith('.md'));
 
-    // Sort files by date in the filename (YYYY-MM-DD)
-    messageFiles.sort((a, b) => {
-        const dateA = a.split("/")[1].split(".")[0]; // Get date from filename
-        const dateB = b.split("/")[1].split(".")[0];
+        // Sort files by date (from filename: yyyy-mm-dd)
+        messageFiles.sort((a, b) => {
+            const dateA = a.name.split("-").slice(0, 3).join("-"); // Format yyyy-mm-dd
+            const dateB = b.name.split("-").slice(0, 3).join("-");
+            return dateB.localeCompare(dateA);  // Sort descending by date
+        });
 
-        return new Date(dateB) - new Date(dateA); // Sort in descending order (latest first)
-    });
+        // Display the messages
+        messagesContainer.innerHTML = "<p>Loading messages...</p>"; // Show loading message
+        for (let file of messageFiles) {
+            const fileResponse = await fetch(file.download_url);
+            const markdownText = await fileResponse.text();
 
-    // Fetch and display the messages
-    for (let file of messageFiles) {
-        const response = await fetch(file);
-        const text = await response.text();
-        const messageDate = file.split("/")[1].split(".")[0]; // Extract date from filename
+            // Convert Markdown to HTML (using 'marked' library)
+            const messageHTML = marked(markdownText);
 
-        const messageHTML = `
-            <div class="message">
-                <h2>Good Morning - ${messageDate}</h2>
-                <p>${text}</p>
-            </div>
-        `;
-        messagesDiv.innerHTML += messageHTML;
+            // Insert the message and its date
+            const messageDate = file.name.split(".")[0]; // Extract date from filename
+            const messageContent = `
+                <div class="message">
+                    <h2>Good Morning - ${messageDate}</h2>
+                    <div class="message-content">${messageHTML}</div>
+                </div>
+            `;
+            messagesContainer.innerHTML += messageContent;
+        }
+    } catch (error) {
+        console.error("Error loading messages:", error);
+        messagesContainer.innerHTML = "<p>Failed to load messages. Please try again later.</p>";
     }
 }
+
+// Call the function when the page loads
+loadMessages();

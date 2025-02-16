@@ -1,75 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Good Morning Messages</title>
-  <link rel="stylesheet" href="assets/style.css"> <!-- Your custom CSS -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Morning Messages</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Good Morning Messages</h1>
-    <p>Here are the messages I've uploaded for you. ❤️</p>
-  </header>
+    <header>
+        <h1>Good Morning Messages for You!</h1>
+    </header>
 
-  <div id="messages-container">
-    <!-- Messages will be dynamically inserted here -->
-  </div>
+    <main>
+        <div id="messages-container">
+            <p>Loading messages...</p>
+        </div>
+    </main>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        loadMessages();
-    });
+    <footer>
+        <p>&copy; 2025 - Made with ❤️</p>
+    </footer>
 
-    // GitHub repository info
-    const repoOwner = "YOUR_GITHUB_USERNAME";  // Replace with your GitHub username
-    const repoName = "good-morning-site";      // Replace with your repository name
-    const messagesContainer = document.getElementById("messages-container");
-
-    async function loadMessages() {
-        const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
-
-        try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-
-            // Filter to get only Markdown files (.md)
-            const messageFiles = data.filter(item => item.name.endsWith('.md'));
-
-            // Sort files by date (from file name: yyyy-mm-dd)
-            messageFiles.sort((a, b) => {
-                const dateA = a.name.split("-")[0] + a.name.split("-")[1] + a.name.split("-")[2];
-                const dateB = b.name.split("-")[0] + b.name.split("-")[1] + b.name.split("-")[2];
-                return dateB - dateA;  // Sort in descending order
-            });
-
-            // Loop through files and display the messages
-            messagesContainer.innerHTML = "<p>Loading messages...</p>";  // Show loading message
-            for (let file of messageFiles) {
-                const fileResponse = await fetch(file.download_url);
-                const markdownText = await fileResponse.text();
-
-                // Convert Markdown to HTML (we'll use a simple Markdown parser)
-                const messageHTML = marked(markdownText); // Requires the 'marked' library
-
-                // Insert the message and its date
-                const messageDate = file.name.split(".")[0]; // Use the filename for the date
-                const messageContent = `
-                    <div class="message">
-                        <h2>Good Morning - ${messageDate}</h2>
-                        <div class="message-content">${messageHTML}</div>
-                    </div>
-                `;
-                messagesContainer.innerHTML += messageContent;
-            }
-        } catch (error) {
-            messagesContainer.innerHTML = "<p>Failed to load messages. Please try again later.</p>";
-            console.error(error);
-        }
-    }
-  </script>
-
-  <!-- Load the 'marked' library to parse Markdown to HTML -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
